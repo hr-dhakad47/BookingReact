@@ -53,29 +53,19 @@ function Landingpage() {
     if (image) {
       const compressedImage = await compressImage(image, 1000);
       const reader = new FileReader();
-      reader.onloadend = async () => {
+      reader.onloadend = () => {
         const base64Image = reader.result.split(',')[1];
         try {
-          const response = await fetch('http://localhost:3001/addClient', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ name, image: base64Image })
-          });
+          // Save the name and base64 image to local storage
+          localStorage.setItem('name', name);
+          localStorage.setItem('image', base64Image);
 
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          const data = await response.json();
-          setResponseMessage(data.message);
+          setResponseMessage('Data saved successfully to local storage');
           // Close the modal after successful submission
           closeModal();
-          console.log(data);
         } catch (error) {
-          setError(`Failed to post data: ${error.message}`);
-          console.error('Failed to post data:', error);
+          setError(`Failed to save data: ${error.message}`);
+          console.error('Failed to save data:', error);
         }
       };
       reader.readAsDataURL(compressedImage);
